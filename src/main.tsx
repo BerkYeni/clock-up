@@ -7,6 +7,7 @@ import ErrorPage from "./routes/ErrorPage";
 import Home from "./routes/Home";
 import ScheduleManager from "./routes/ScheduleManager";
 import Statistics from "./routes/Statistics";
+import CreateSchedule from "./routes/CreateSchedule";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "/statistics",
         element: <Statistics />,
+      },
+      {
+        path: "/create",
+        element: <CreateSchedule />,
       },
     ],
   },

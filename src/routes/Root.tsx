@@ -15,8 +15,8 @@ const NavbarButton: FC<{ content: string; link: string }> = ({
 
 const Root: FC = () => {
   return (
-    <div className="h-screen bg-zinc-900">
-      <nav className="box-border flex justify-around absolute left-0 right-0 bottom-0 bg-zinc-700">
+    <div className="h-full bg-zinc-900">
+      <nav className="box-border flex justify-around fixed left-0 right-0 bottom-0 bg-zinc-700">
         <NavbarButton content="MANAGE" link="manage" />
         <NavbarButton content="HOME" link="" />
         <NavbarButton content="STATISTICS" link="statistics" />

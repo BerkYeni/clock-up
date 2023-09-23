@@ -1,13 +1,13 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
 
-type Timing = string;
+// type Timing = string;
 
-type Schedule = {
-  name: string;
-  id: string;
-  timing: Timing;
-};
+// type Schedule = {
+//   name: string;
+//   id: string;
+//   timing: Timing;
+// };
 
 const schedules: Schedule[] = [
   { id: "0", name: "testing", timing: "awooga" },

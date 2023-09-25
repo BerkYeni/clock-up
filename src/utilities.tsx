@@ -1,5 +1,7 @@
 import { HourAndMinute, HourWindow, TimeFrames } from "./interfaces";
 
+// TODO: check for start < end in isValidHoursWindow
+
 export const combinations = <Type,>(
   items: Type[]
 ): readonly (readonly [Type, Type])[] => {

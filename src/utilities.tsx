@@ -16,7 +16,7 @@ export const combinations = <Type,>(
 export const toMinutes = (hourAndMinute: HourAndMinute): number =>
   hourAndMinute.hours * 60 + hourAndMinute.minutes;
 
-export const isValidTimeFrames = (hourWindows: HourWindow[]): boolean => {
+export const isValidHourWindows = (hourWindows: HourWindow[]): boolean => {
   const hourCombinationPairs = combinations(hourWindows);
   return hourCombinationPairs.every((windowPair) => {
     const [earlier, later] =
@@ -27,8 +27,8 @@ export const isValidTimeFrames = (hourWindows: HourWindow[]): boolean => {
   });
 };
 
-export const isValidHourFrame = (timeFrame: TimeFrames): boolean => {
-  return [isValidTimeFrames(timeFrame.hourWindows)].every(
+export const isValidTimeFrames = (timeFrame: TimeFrames): boolean => {
+  return [isValidHourWindows(timeFrame.hourWindows)].every(
     (check) => check === true
   );
 };

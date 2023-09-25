@@ -3,11 +3,11 @@ export type HourAndMinute = {
   minutes: number; // between 0 - 59
 };
 
-export type HourFrames = {
+export type HourWindow = {
   // this is the time frame between
   // two 'smaller' and 'bigger' times of day
-  timeA: HourAndMinute;
-  timeB: HourAndMinute;
+  start: HourAndMinute;
+  end: HourAndMinute;
 };
 
 export enum Weekdays {
@@ -20,11 +20,11 @@ export enum Weekdays {
   Sunday,
 }
 
-export type WeekFrames = { [key in keyof typeof Weekdays]: boolean };
+export type WeekFrame = { [key in keyof typeof Weekdays]: boolean };
 
 export type TimeFrames = {
-  hourFrames: HourFrames[];
-  weekFrames: WeekFrames;
+  hourWindows: HourWindow[];
+  weekFrames: WeekFrame;
 };
 
 export type Schedule = {

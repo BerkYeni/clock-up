@@ -18,11 +18,22 @@ import { FC } from "react";
 import { Schedule } from "@/interfaces";
 import { Checkbox } from "@/components/ui/checkbox";
 
+import Testing from "../components/Testingdfsa";
+import NewTestin from "@/components/NewTestingdfsa";
+import { Slider } from "@/components/ui/slider";
+import { SliderRange, SliderThumb, SliderTrack } from "@radix-ui/react-slider";
+// import { Slider } from "@radix-ui/react-slider";
+
 // TODO: look into toast
 
 const week = [
   { id: "monday", day: "Monday" },
   { id: "tuesday", day: "Tuesday" },
+  { id: "wednesday", day: "Wednesday" },
+  { id: "thursday", day: "Thursday" },
+  { id: "friday", day: "Friday" },
+  { id: "saturday", day: "Saturday" },
+  { id: "sunday", day: "Sunday" },
 ] as const;
 
 const FormSchema = z.object({
@@ -38,7 +49,7 @@ const CreateSchedule: FC = () => {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       scheduleName: "",
-      week: ["Monday", "Tuesday"],
+      week: ["monday", "tuesday", "wednesday", "thursday", "friday"],
     },
   });
 
@@ -121,6 +132,21 @@ const CreateSchedule: FC = () => {
                 </FormItem>
               )}
             />
+
+            {/* <FormField
+              name="test"
+              render={() => (
+                <Slider defaultValue={[100, 500]} max={1440}>
+                  <SliderTrack>
+                    <SliderRange />
+                  </SliderTrack>
+                  <SliderThumb />
+                  <SliderThumb />
+                </Slider>
+              )}
+            /> */}
+
+            <NewTestin defaultValue={[25, 50]} />
 
             <div className="flex justify-end">
               <Button type="submit">Create Schedule</Button>

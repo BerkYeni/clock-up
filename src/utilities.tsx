@@ -16,6 +16,16 @@ export const combinations = <Type,>(
 export const toMinutes = (hourAndMinute: HourAndMinute): number =>
   hourAndMinute.hours * 60 + hourAndMinute.minutes;
 
+export const toHourAndMinute = (minutes: number): HourAndMinute => ({
+  hours: Math.floor(minutes / 60),
+  minutes: minutes % 60,
+});
+
+export const toStringHourAndMinute = (hourAndMinute: HourAndMinute): string =>
+  `${hourAndMinute.hours < 10 ? "0" : ""}${hourAndMinute.hours}:${
+    hourAndMinute.minutes < 10 ? "0" : ""
+  }${hourAndMinute.minutes}`;
+
 export const isThroughMidnight = (hourWindow: HourWindow): boolean =>
   toMinutes(hourWindow.start) > toMinutes(hourWindow.end);
 

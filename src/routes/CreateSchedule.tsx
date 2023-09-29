@@ -14,14 +14,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
-import { FC } from "react";
-import { Schedule } from "@/interfaces";
+import { FC, useEffect, useState } from "react";
+import { HourAndMinute, HourWindow, Schedule } from "@/interfaces";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import Testing from "../components/Testingdfsa";
 import NewTestin from "@/components/NewTestingdfsa";
 import { Slider } from "@/components/ui/slider";
 import { SliderRange, SliderThumb, SliderTrack } from "@radix-ui/react-slider";
+import { toHourAndMinute, toStringHourAndMinute } from "@/utilities";
+import { render } from "react-dom";
 // import { Slider } from "@radix-ui/react-slider";
 
 // TODO: look into toast
@@ -41,6 +43,19 @@ const FormSchema = z.object({
     message: "Schedule Name must be at least 1 characters.",
   }),
   week: z.array(z.string()).refine((value) => value.some(Boolean)),
+  hourWindowInput: z.object({
+    start: z.object({ hours: z.number(), minutes: z.number() }),
+    end: z.object({ hours: z.number(), minutes: z.number() }),
+  }),
+  hourWindows: z.array(
+    z.object({
+      id: z.number(),
+      hourWindowsValue: z.object({
+        start: z.object({ hours: z.number(), minutes: z.number() }),
+        end: z.object({ hours: z.number(), minutes: z.number() }),
+      }),
+    })
+  ),
 });
 
 const CreateSchedule: FC = () => {
@@ -50,8 +65,32 @@ const CreateSchedule: FC = () => {
     defaultValues: {
       scheduleName: "",
       week: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      hourWindowInput: {
+        start: { hours: 1, minutes: 0 },
+        end: { hours: 17, minutes: 0 },
+      },
+      hourWindows: [
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 0,
+        },
+      ],
     },
   });
+
+  const [hourWindows, setHourWindows] = useState<HourWindow[]>([
+    { start: { hours: 12, minutes: 0 }, end: { hours: 15, minutes: 0 } },
+  ]);
+  // const [test2, setTest2] = useState(500);
+  const [start, setStart] = useState(hourWindows[0].start);
+  const [end, setEnd] = useState(hourWindows[0].end);
+
+  useEffect(() => {
+    console.log(hourWindows);
+  }, [hourWindows]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
@@ -133,6 +172,125 @@ const CreateSchedule: FC = () => {
               )}
             />
 
+            <FormField
+              name="hourWindowInput"
+              control={form.control}
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Time Frames</FormLabel>
+                    <FormField
+                      name="hourWindowInput"
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <FormItem>
+                            <FormControl>
+                              <div className="flex">
+                                <Input
+                                  type="number"
+                                  step={1}
+                                  min={0}
+                                  max={23}
+                                  value={field.value.start.hours}
+                                  onChange={(event) =>
+                                    field.onChange({
+                                      ...field.value,
+                                      start: {
+                                        ...field.value.start,
+                                        hours: event.target.value,
+                                      },
+                                    })
+                                  }
+                                />
+                                <Input
+                                  type="number"
+                                  step={1}
+                                  min={0}
+                                  max={59}
+                                  value={field.value.start.minutes}
+                                  onChange={(event) =>
+                                    field.onChange({
+                                      ...field.value,
+                                      start: {
+                                        ...field.value.start,
+                                        minutes: event.target.value,
+                                      },
+                                    })
+                                  }
+                                />
+                                <Input
+                                  type="number"
+                                  step={1}
+                                  min={0}
+                                  max={23}
+                                  value={field.value.end.hours}
+                                  onChange={(event) =>
+                                    field.onChange({
+                                      ...field.value,
+                                      end: {
+                                        ...field.value.start,
+                                        hours: event.target.value,
+                                      },
+                                    })
+                                  }
+                                />
+                                <Input
+                                  type="number"
+                                  step={1}
+                                  min={0}
+                                  max={59}
+                                  value={field.value.end.minutes}
+                                  onChange={(event) =>
+                                    field.onChange({
+                                      ...field.value,
+                                      end: {
+                                        ...field.value.start,
+                                        minutes: event.target.value,
+                                      },
+                                    })
+                                  }
+                                />
+                              </div>
+                            </FormControl>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              name="hourWindows"
+              control={form.control}
+              render={(field) => {
+                return (
+                  <FormItem>
+                    <div className="mb-4">
+                      <FormLabel>Hour Windows</FormLabel>
+                      {field.field.value.map((hourWindow) => (
+                        <FormField
+                          key={hourWindow.id}
+                          name="hourWindows"
+                          control={form.control}
+                          render={({ field }) => (
+                            <div>
+                              <div>
+                                {hourWindow.hourWindowsValue.start.hours}
+                              </div>
+                            </div>
+                          )}
+                        />
+                      ))}
+                    </div>
+                  </FormItem>
+                );
+              }}
+            />
+
             {/* <FormField
               name="test"
               render={() => (
@@ -146,7 +304,57 @@ const CreateSchedule: FC = () => {
               )}
             /> */}
 
-            <NewTestin defaultValue={[25, 50]} />
+            {/* <input
+              type="number"
+              value={start.hours}
+              onChange={(event) =>
+                setStart((previousStart) => ({
+                  ...previousStart,
+                  hours: Number(event.target.value),
+                }))
+              }
+            />
+            <input
+              type="number"
+              value={start.minutes}
+              onChange={(event) =>
+                setStart((previousStart) => ({
+                  ...previousStart,
+                  minutes: Number(event.target.value),
+                }))
+              }
+            />
+            <input
+              type="number"
+              value={end.hours}
+              onChange={(event) =>
+                setEnd((previousStart) => ({
+                  ...previousStart,
+                  hours: Number(event.target.value),
+                }))
+              }
+            />
+            <input
+              type="number"
+              value={end.minutes}
+              onChange={(event) =>
+                setEnd((previousStart) => ({
+                  ...previousStart,
+                  minutes: Number(event.target.value),
+                }))
+              }
+            />
+            <button
+              onClick={(e) => {
+                setHourWindows((previousHourWindows) => [
+                  ...previousHourWindows,
+                  { start: start, end: end },
+                ]);
+                e.preventDefault();
+              }}
+            >
+              Test
+            </button> */}
 
             <div className="flex justify-end">
               <Button type="submit">Create Schedule</Button>

@@ -24,6 +24,8 @@ import { Slider } from "@/components/ui/slider";
 import { SliderRange, SliderThumb, SliderTrack } from "@radix-ui/react-slider";
 import { toHourAndMinute, toStringHourAndMinute } from "@/utilities";
 import { render } from "react-dom";
+import { Separator } from "@radix-ui/react-separator";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 // import { Slider } from "@radix-ui/react-slider";
 
 // TODO: look into toast
@@ -76,6 +78,62 @@ const CreateSchedule: FC = () => {
             end: { hours: 12, minutes: 0 },
           },
           id: 0,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 1,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 2,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 3,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 4,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 5,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 6,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 7,
+        },
+        {
+          hourWindowsValue: {
+            start: { hours: 9, minutes: 0 },
+            end: { hours: 12, minutes: 0 },
+          },
+          id: 8,
         },
       ],
     },
@@ -183,6 +241,7 @@ const CreateSchedule: FC = () => {
                       name="hourWindowInput"
                       control={form.control}
                       render={({ field }) => {
+                        // TODO: swap this with materialui time picker android ver
                         return (
                           <FormItem>
                             <FormControl>
@@ -271,90 +330,40 @@ const CreateSchedule: FC = () => {
                   <FormItem>
                     <div className="mb-4">
                       <FormLabel>Hour Windows</FormLabel>
-                      {field.field.value.map((hourWindow) => (
-                        <FormField
-                          key={hourWindow.id}
-                          name="hourWindows"
-                          control={form.control}
-                          render={({ field }) => (
-                            <div>
-                              <div>
-                                {hourWindow.hourWindowsValue.start.hours}
-                              </div>
-                            </div>
-                          )}
-                        />
-                      ))}
+
+                      <ScrollArea className="h-36 w-48 rounded-md border overflow-y-auto">
+                        <div className="p-4">
+                          <h4 className="mb-4 text-sm font-medium leading-none">
+                            Tags
+                          </h4>
+                          {field.field.value.map((hourWindow) => (
+                            <>
+                              <FormField
+                                key={hourWindow.id}
+                                name="hourWindows"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <div className="border-2 border-zinc-950 rounded-md">
+                                    <div>
+                                      {
+                                        `${toStringHourAndMinute(
+                                          hourWindow.hourWindowsValue.start
+                                        )}` // TODO: implement to string am pm
+                                      }
+                                    </div>
+                                  </div>
+                                )}
+                              />
+                              <Separator className="my-2" />
+                            </>
+                          ))}
+                        </div>
+                      </ScrollArea>
                     </div>
                   </FormItem>
                 );
               }}
             />
-
-            {/* <FormField
-              name="test"
-              render={() => (
-                <Slider defaultValue={[100, 500]} max={1440}>
-                  <SliderTrack>
-                    <SliderRange />
-                  </SliderTrack>
-                  <SliderThumb />
-                  <SliderThumb />
-                </Slider>
-              )}
-            /> */}
-
-            {/* <input
-              type="number"
-              value={start.hours}
-              onChange={(event) =>
-                setStart((previousStart) => ({
-                  ...previousStart,
-                  hours: Number(event.target.value),
-                }))
-              }
-            />
-            <input
-              type="number"
-              value={start.minutes}
-              onChange={(event) =>
-                setStart((previousStart) => ({
-                  ...previousStart,
-                  minutes: Number(event.target.value),
-                }))
-              }
-            />
-            <input
-              type="number"
-              value={end.hours}
-              onChange={(event) =>
-                setEnd((previousStart) => ({
-                  ...previousStart,
-                  hours: Number(event.target.value),
-                }))
-              }
-            />
-            <input
-              type="number"
-              value={end.minutes}
-              onChange={(event) =>
-                setEnd((previousStart) => ({
-                  ...previousStart,
-                  minutes: Number(event.target.value),
-                }))
-              }
-            />
-            <button
-              onClick={(e) => {
-                setHourWindows((previousHourWindows) => [
-                  ...previousHourWindows,
-                  { start: start, end: end },
-                ]);
-                e.preventDefault();
-              }}
-            >
-              Test
-            </button> */}
 
             <div className="flex justify-end">
               <Button type="submit">Create Schedule</Button>

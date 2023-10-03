@@ -245,72 +245,83 @@ const CreateSchedule: FC = () => {
                         return (
                           <FormItem>
                             <FormControl>
-                              <div className="flex">
-                                <Input
-                                  type="number"
-                                  step={1}
-                                  min={0}
-                                  max={23}
-                                  value={field.value.start.hours}
-                                  onChange={(event) =>
-                                    field.onChange({
-                                      ...field.value,
-                                      start: {
-                                        ...field.value.start,
-                                        hours: event.target.value,
-                                      },
-                                    })
-                                  }
-                                />
-                                <Input
-                                  type="number"
-                                  step={1}
-                                  min={0}
-                                  max={59}
-                                  value={field.value.start.minutes}
-                                  onChange={(event) =>
-                                    field.onChange({
-                                      ...field.value,
-                                      start: {
-                                        ...field.value.start,
-                                        minutes: event.target.value,
-                                      },
-                                    })
-                                  }
-                                />
-                                <Input
-                                  type="number"
-                                  step={1}
-                                  min={0}
-                                  max={23}
-                                  value={field.value.end.hours}
-                                  onChange={(event) =>
-                                    field.onChange({
-                                      ...field.value,
-                                      end: {
-                                        ...field.value.start,
-                                        hours: event.target.value,
-                                      },
-                                    })
-                                  }
-                                />
-                                <Input
-                                  type="number"
-                                  step={1}
-                                  min={0}
-                                  max={59}
-                                  value={field.value.end.minutes}
-                                  onChange={(event) =>
-                                    field.onChange({
-                                      ...field.value,
-                                      end: {
-                                        ...field.value.start,
-                                        minutes: event.target.value,
-                                      },
-                                    })
-                                  }
-                                />
-                              </div>
+                              <>
+                                <div className="flex">
+                                  <Input
+                                    type="number"
+                                    step={1}
+                                    min={0}
+                                    max={23}
+                                    value={field.value.start.hours}
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        start: {
+                                          ...field.value.start,
+                                          hours: event.target.value,
+                                        },
+                                      })
+                                    }
+                                  />
+                                  <Input
+                                    type="number"
+                                    step={1}
+                                    min={0}
+                                    max={59}
+                                    value={field.value.start.minutes}
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        start: {
+                                          ...field.value.start,
+                                          minutes: event.target.value,
+                                        },
+                                      })
+                                    }
+                                  />
+                                  <Input
+                                    type="number"
+                                    step={1}
+                                    min={0}
+                                    max={23}
+                                    value={field.value.end.hours}
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        end: {
+                                          ...field.value.start,
+                                          hours: event.target.value,
+                                        },
+                                      })
+                                    }
+                                  />
+                                  <Input
+                                    type="number"
+                                    step={1}
+                                    min={0}
+                                    max={59}
+                                    value={field.value.end.minutes}
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        end: {
+                                          ...field.value.start,
+                                          minutes: event.target.value,
+                                        },
+                                      })
+                                    }
+                                  />
+                                </div>
+                                <div className="flex justify-end">
+                                  <Button
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                    }}
+                                  >
+                                    Add Window
+                                  </Button>
+                                </div>
+                              </>
                             </FormControl>
                           </FormItem>
                         );
@@ -331,31 +342,43 @@ const CreateSchedule: FC = () => {
                     <div className="mb-4">
                       <FormLabel>Hour Windows</FormLabel>
 
-                      <ScrollArea className="h-36 w-48 rounded-md border overflow-y-auto">
+                      <ScrollArea className="overflow-y-auto w-full h-36 rounded-md border">
                         <div className="p-4">
-                          <h4 className="mb-4 text-sm font-medium leading-none">
-                            Tags
-                          </h4>
                           {field.field.value.map((hourWindow) => (
-                            <>
+                            <div key={hourWindow.id}>
                               <FormField
-                                key={hourWindow.id}
                                 name="hourWindows"
                                 control={form.control}
                                 render={({ field }) => (
                                   <div className="border-2 border-zinc-950 rounded-md">
-                                    <div>
+                                    <div className="flex w-full justify-between items-center">
                                       {
                                         `${toStringHourAndMinute(
                                           hourWindow.hourWindowsValue.start
+                                        )} - ${toStringHourAndMinute(
+                                          hourWindow.hourWindowsValue.end
                                         )}` // TODO: implement to string am pm
                                       }
+
+                                      <Button
+                                        onClick={(event) => {
+                                          event.preventDefault();
+                                          field.onChange(
+                                            field.value.filter(
+                                              (window) =>
+                                                window.id !== hourWindow.id
+                                            )
+                                          );
+                                        }}
+                                      >
+                                        Remove
+                                      </Button>
                                     </div>
                                   </div>
                                 )}
                               />
                               <Separator className="my-2" />
-                            </>
+                            </div>
                           ))}
                         </div>
                       </ScrollArea>

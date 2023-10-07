@@ -22,7 +22,11 @@ import Testing from "../components/Testingdfsa";
 import NewTestin from "@/components/NewTestingdfsa";
 import { Slider } from "@/components/ui/slider";
 import { SliderRange, SliderThumb, SliderTrack } from "@radix-ui/react-slider";
-import { toHourAndMinute, toStringHourAndMinute } from "@/utilities";
+import {
+  isValidHourWindows,
+  toHourAndMinute,
+  toStringHourAndMinute,
+} from "@/utilities";
 import { render } from "react-dom";
 import { Separator } from "@radix-ui/react-separator";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -40,25 +44,36 @@ const week = [
   { id: "sunday", day: "Sunday" },
 ] as const;
 
+// TODO: write error messages for hour window input and display them when
+// Add Wondow button is pressed, not when Create Schedule button is pressed.
+const hourSchema = z.number().min(0).max(23);
+const minuteSchema = z.number().min(0).max(59);
+const hourAndMinuteSchema = z.object({
+  hours: hourSchema,
+  minutes: minuteSchema,
+});
+const hourWindowSchema = z.object({
+  start: hourAndMinuteSchema,
+  end: hourAndMinuteSchema,
+});
+
 const FormSchema = z.object({
   scheduleName: z.string().min(1, {
     message: "Schedule Name must be at least 1 characters.",
   }),
   week: z.array(z.string()).refine((value) => value.some(Boolean)),
   hourWindowModule: z.object({
-    hourWindowInput: z.object({
-      start: z.object({ hours: z.number(), minutes: z.number() }),
-      end: z.object({ hours: z.number(), minutes: z.number() }),
-    }),
-    hourWindows: z.array(
-      z.object({
+    hourWindowInput: hourWindowSchema,
+    hourWindows: z
+      .object({
         id: z.number(),
-        hourWindowsValue: z.object({
-          start: z.object({ hours: z.number(), minutes: z.number() }),
-          end: z.object({ hours: z.number(), minutes: z.number() }),
-        }),
+        hourWindowsValue: hourWindowSchema,
       })
-    ),
+      .array()
+      .nonempty("There has to be at least 1 hour window.")
+      .refine((windows) =>
+        isValidHourWindows(windows.map((window) => window.hourWindowsValue))
+      ),
   }),
 });
 
@@ -206,8 +221,8 @@ const CreateSchedule: FC = () => {
                                     <Input
                                       type="number"
                                       step={1}
-                                      min={0}
-                                      max={23}
+                                      // min={0}
+                                      // max={23}
                                       value={
                                         field.value.hourWindowInput.start.hours
                                       }
@@ -226,6 +241,7 @@ const CreateSchedule: FC = () => {
                                       }
                                     />
                                     <Input
+                                      className="mr-1"
                                       type="number"
                                       step={1}
                                       min={0}
@@ -249,6 +265,7 @@ const CreateSchedule: FC = () => {
                                       }
                                     />
                                     <Input
+                                      className="ml-1"
                                       type="number"
                                       step={1}
                                       min={0}
@@ -352,55 +369,58 @@ const CreateSchedule: FC = () => {
                         control={form.control}
                         render={(field) => (
                           <div className="mb-4">
-                            <FormLabel>Hour Windows</FormLabel>
+                            <FormItem>
+                              <FormLabel>Hour Windows</FormLabel>
 
-                            <ScrollArea className="overflow-y-auto w-full h-36 rounded-md border">
-                              <div className="p-4">
-                                {field.field.value.hourWindows.map(
-                                  (hourWindow) => (
-                                    <div key={hourWindow.id}>
-                                      <FormField
-                                        name="hourWindowModule"
-                                        control={form.control}
-                                        render={({ field }) => (
-                                          <div className="border-2 border-zinc-950 rounded-md">
-                                            <div className="flex w-full justify-between items-center">
-                                              {
-                                                `${toStringHourAndMinute(
-                                                  hourWindow.hourWindowsValue
-                                                    .start
-                                                )} - ${toStringHourAndMinute(
-                                                  hourWindow.hourWindowsValue
-                                                    .end
-                                                )}` // TODO: implement to string am pm
-                                              }
+                              <ScrollArea className="overflow-y-auto w-full h-36 rounded-md border">
+                                <div className="p-4">
+                                  {field.field.value.hourWindows.map(
+                                    (hourWindow) => (
+                                      <div key={hourWindow.id}>
+                                        <FormField
+                                          name="hourWindowModule"
+                                          control={form.control}
+                                          render={({ field }) => (
+                                            <div className="border-2 border-zinc-950 rounded-md">
+                                              <div className="flex w-full justify-between items-center">
+                                                {
+                                                  `${toStringHourAndMinute(
+                                                    hourWindow.hourWindowsValue
+                                                      .start
+                                                  )} - ${toStringHourAndMinute(
+                                                    hourWindow.hourWindowsValue
+                                                      .end
+                                                  )}` // TODO: implement to string am pm
+                                                }
 
-                                              <Button
-                                                onClick={(event) => {
-                                                  event.preventDefault();
-                                                  field.onChange({
-                                                    ...field.value,
-                                                    hourWindows:
-                                                      field.value.hourWindows.filter(
-                                                        (window) =>
-                                                          window.id !==
-                                                          hourWindow.id
-                                                      ),
-                                                  });
-                                                }}
-                                              >
-                                                Remove
-                                              </Button>
+                                                <Button
+                                                  onClick={(event) => {
+                                                    event.preventDefault();
+                                                    field.onChange({
+                                                      ...field.value,
+                                                      hourWindows:
+                                                        field.value.hourWindows.filter(
+                                                          (window) =>
+                                                            window.id !==
+                                                            hourWindow.id
+                                                        ),
+                                                    });
+                                                  }}
+                                                >
+                                                  Remove
+                                                </Button>
+                                              </div>
                                             </div>
-                                          </div>
-                                        )}
-                                      />
-                                      <Separator className="my-2" />
-                                    </div>
-                                  )
-                                )}
-                              </div>
-                            </ScrollArea>
+                                          )}
+                                        />
+                                        <Separator className="my-2" />
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              </ScrollArea>
+                              <FormMessage />
+                            </FormItem>
                           </div>
                         )}
                       />

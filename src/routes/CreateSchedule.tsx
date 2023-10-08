@@ -46,7 +46,7 @@ const week = [
 
 // TODO: write error messages for hour window input and display them when
 // Add Wondow button is pressed, not when Create Schedule button is pressed.
-const hourSchema = z.number().min(0).max(23);
+const hourSchema = z.number().min(0, { message: "testing awooga" }).max(23);
 const minuteSchema = z.number().min(0).max(59);
 const hourAndMinuteSchema = z.object({
   hours: hourSchema,
@@ -57,26 +57,32 @@ const hourWindowSchema = z.object({
   end: hourAndMinuteSchema,
 });
 
-const FormSchema = z.object({
-  scheduleName: z.string().min(1, {
-    message: "Schedule Name must be at least 1 characters.",
-  }),
-  week: z.array(z.string()).refine((value) => value.some(Boolean)),
-  hourWindowModule: z.object({
-    hourWindowInput: hourWindowSchema,
-    hourWindows: z
-      .object({
-        id: z.number(),
-        hourWindowsValue: hourWindowSchema,
-      })
-      .array()
-      .nonempty("There has to be at least 1 hour window.")
-      .refine((windows) =>
-        isValidHourWindows(windows.map((window) => window.hourWindowsValue))
+const FormSchema = z
+  .object({
+    scheduleName: z.string().min(1, {
+      message: "Schedule Name must be at least 1 characters.",
+    }),
+    week: z.array(z.string()).refine((value) => value.some(Boolean)),
+    hourWindowModule: z.object({
+      hourWindowInput: hourWindowSchema,
+      hourWindows: z
+        .object({
+          id: z.number(),
+          hourWindowsValue: hourWindowSchema,
+        })
+        .array()
+        .nonempty({ message: "There has to be at least 1 hour window." }),
+    }),
+  })
+  .refine(
+    (schema) =>
+      isValidHourWindows(
+        schema.hourWindowModule.hourWindows.map(
+          (window) => window.hourWindowsValue
+        )
       ),
-  }),
-});
-
+    { message: "Hour windows must not collide.", path: ["hourWindowModule"] }
+  );
 const CreateSchedule: FC = () => {
   // export function CreateSchedule() {
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -86,7 +92,7 @@ const CreateSchedule: FC = () => {
       week: ["monday", "tuesday", "wednesday", "thursday", "friday"],
       hourWindowModule: {
         hourWindowInput: {
-          start: { hours: 1, minutes: 0 },
+          start: { hours: 13, minutes: 0 },
           end: { hours: 17, minutes: 0 },
         },
         hourWindows: [
@@ -96,13 +102,6 @@ const CreateSchedule: FC = () => {
               end: { hours: 12, minutes: 0 },
             },
             id: 0,
-          },
-          {
-            hourWindowsValue: {
-              start: { hours: 9, minutes: 0 },
-              end: { hours: 12, minutes: 0 },
-            },
-            id: 1,
           },
         ],
       },
@@ -215,153 +214,157 @@ const CreateSchedule: FC = () => {
                           // TODO: swap this with materialui time picker android ver
                           return (
                             <FormItem>
-                              <FormControl>
-                                <>
-                                  <div className="flex">
-                                    <Input
-                                      type="number"
-                                      step={1}
-                                      // min={0}
-                                      // max={23}
-                                      value={
-                                        field.value.hourWindowInput.start.hours
-                                      }
-                                      onChange={(event) =>
-                                        field.onChange({
-                                          ...field.value,
-                                          hourWindowInput: {
-                                            ...field.value.hourWindowInput,
-                                            start: {
-                                              ...field.value.hourWindowInput
-                                                .start,
-                                              hours: event.target.value,
-                                            },
+                              <div className="flex">
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    step={1}
+                                    // min={0}
+                                    // max={23}
+                                    value={
+                                      field.value.hourWindowInput.start.hours
+                                    }
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        hourWindowInput: {
+                                          ...field.value.hourWindowInput,
+                                          start: {
+                                            ...field.value.hourWindowInput
+                                              .start,
+                                            hours: event.target.value,
                                           },
-                                        })
-                                      }
-                                    />
-                                    <Input
-                                      className="mr-1"
-                                      type="number"
-                                      step={1}
-                                      min={0}
-                                      max={59}
-                                      value={
-                                        field.value.hourWindowInput.start
-                                          .minutes
-                                      }
-                                      onChange={(event) =>
-                                        field.onChange({
-                                          ...field.value,
-                                          hourWindowInput: {
-                                            ...field.value.hourWindowInput,
-                                            start: {
-                                              ...field.value.hourWindowInput
-                                                .start,
-                                              minutes: event.target.value,
-                                            },
+                                        },
+                                      })
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                                <FormControl>
+                                  <Input
+                                    className="mr-1"
+                                    type="number"
+                                    step={1}
+                                    min={0}
+                                    max={59}
+                                    value={
+                                      field.value.hourWindowInput.start.minutes
+                                    }
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        hourWindowInput: {
+                                          ...field.value.hourWindowInput,
+                                          start: {
+                                            ...field.value.hourWindowInput
+                                              .start,
+                                            minutes: event.target.value,
                                           },
-                                        })
-                                      }
-                                    />
-                                    <Input
-                                      className="ml-1"
-                                      type="number"
-                                      step={1}
-                                      min={0}
-                                      max={23}
-                                      value={
-                                        field.value.hourWindowInput.end.hours
-                                      }
-                                      onChange={(event) =>
-                                        field.onChange({
-                                          ...field.value,
-                                          hourWindowInput: {
-                                            ...field.value.hourWindowInput,
-                                            end: {
-                                              ...field.value.hourWindowInput
-                                                .end,
-                                              hours: event.target.value,
-                                            },
+                                        },
+                                      })
+                                    }
+                                  />
+                                </FormControl>
+                                <FormControl>
+                                  <Input
+                                    className="ml-1"
+                                    type="number"
+                                    step={1}
+                                    min={0}
+                                    max={23}
+                                    value={
+                                      field.value.hourWindowInput.end.hours
+                                    }
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        hourWindowInput: {
+                                          ...field.value.hourWindowInput,
+                                          end: {
+                                            ...field.value.hourWindowInput.end,
+                                            hours: event.target.value,
                                           },
-                                        })
-                                      }
-                                    />
-                                    <Input
-                                      type="number"
-                                      step={1}
-                                      min={0}
-                                      max={59}
-                                      value={
-                                        field.value.hourWindowInput.end.minutes
-                                      }
-                                      onChange={(event) =>
-                                        field.onChange({
-                                          ...field.value,
-                                          hourWindowInput: {
-                                            ...field.value.hourWindowInput,
-                                            end: {
-                                              ...field.value.hourWindowInput
-                                                .end,
-                                              minutes: event.target.value,
-                                            },
+                                        },
+                                      })
+                                    }
+                                  />
+                                </FormControl>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    step={1}
+                                    min={0}
+                                    max={59}
+                                    value={
+                                      field.value.hourWindowInput.end.minutes
+                                    }
+                                    onChange={(event) =>
+                                      field.onChange({
+                                        ...field.value,
+                                        hourWindowInput: {
+                                          ...field.value.hourWindowInput,
+                                          end: {
+                                            ...field.value.hourWindowInput.end,
+                                            minutes: event.target.value,
                                           },
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                  <div className="flex justify-end">
-                                    <Button
-                                      onClick={(event) => {
-                                        event.preventDefault();
-                                        const biggestId = field.value
-                                          .hourWindows.length
-                                          ? Math.max(
-                                              ...field.value.hourWindows.map(
-                                                (window) => window.id
-                                              )
+                                        },
+                                      })
+                                    }
+                                  />
+                                </FormControl>
+                              </div>
+                              <div className="flex justify-end">
+                                <FormControl>
+                                  <Button
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      const biggestId = field.value.hourWindows
+                                        .length
+                                        ? Math.max(
+                                            ...field.value.hourWindows.map(
+                                              (window) => window.id
                                             )
-                                          : -1;
-                                        const newWindow = {
-                                          id: biggestId + 1,
-                                          hourWindowsValue: {
-                                            start: {
-                                              hours:
-                                                field.value.hourWindowInput
-                                                  .start.hours,
-                                              minutes:
-                                                field.value.hourWindowInput
-                                                  .start.minutes,
-                                            },
-                                            end: {
-                                              hours:
-                                                field.value.hourWindowInput.end
-                                                  .hours,
-                                              minutes:
-                                                field.value.hourWindowInput.end
-                                                  .minutes,
-                                            },
+                                          )
+                                        : -1;
+                                      const newWindow = {
+                                        id: biggestId + 1,
+                                        hourWindowsValue: {
+                                          start: {
+                                            hours:
+                                              field.value.hourWindowInput.start
+                                                .hours,
+                                            minutes:
+                                              field.value.hourWindowInput.start
+                                                .minutes,
                                           },
-                                        };
-                                        field.onChange({
-                                          ...field.value,
-                                          hourWindows: [
-                                            ...field.value.hourWindows,
-                                            newWindow,
-                                          ],
-                                        });
-                                      }}
-                                    >
-                                      Add Window
-                                    </Button>
-                                  </div>
-                                </>
-                              </FormControl>
+                                          end: {
+                                            hours:
+                                              field.value.hourWindowInput.end
+                                                .hours,
+                                            minutes:
+                                              field.value.hourWindowInput.end
+                                                .minutes,
+                                          },
+                                        },
+                                      };
+                                      field.onChange({
+                                        ...field.value,
+                                        hourWindows: [
+                                          ...field.value.hourWindows,
+                                          newWindow,
+                                        ],
+                                      });
+                                    }}
+                                  >
+                                    Add Window
+                                  </Button>
+                                </FormControl>
+                                <FormMessage />
+                              </div>
                             </FormItem>
                           );
                         }}
                       />
-                      <FormMessage />
                     </FormItem>
                     <FormItem>
                       <FormField
@@ -424,6 +427,7 @@ const CreateSchedule: FC = () => {
                           </div>
                         )}
                       />
+                      <FormMessage />
                     </FormItem>
                   </>
                 );

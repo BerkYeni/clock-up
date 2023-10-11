@@ -15,34 +15,20 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
 import { FC, useEffect, useState } from "react";
-import { HourAndMinute, HourWindow, Schedule } from "@/interfaces";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import Testing from "../components/Testingdfsa";
-import NewTestin from "@/components/NewTestingdfsa";
-import { Slider } from "@/components/ui/slider";
-import { SliderRange, SliderThumb, SliderTrack } from "@radix-ui/react-slider";
 import {
   isValidHourWindows,
   toHourAndMinute,
   toStringHourAndMinute,
 } from "@/utilities";
-import { render } from "react-dom";
 import { Separator } from "@radix-ui/react-separator";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import ScheduleNameField from "@/components/ScheduleNameField";
+import WeekdaysField from "@/components/WeekdaysField";
 // import { Slider } from "@radix-ui/react-slider";
 
 // TODO: look into toast
-
-const week = [
-  { id: "monday", day: "Monday" },
-  { id: "tuesday", day: "Tuesday" },
-  { id: "wednesday", day: "Wednesday" },
-  { id: "thursday", day: "Thursday" },
-  { id: "friday", day: "Friday" },
-  { id: "saturday", day: "Saturday" },
-  { id: "sunday", day: "Sunday" },
-] as const;
 
 // TODO: write error messages for hour window input and display them when
 // Add Wondow button is pressed, not when Create Schedule button is pressed.
@@ -83,9 +69,12 @@ const FormSchema = z
       ),
     { message: "Hour windows must not collide.", path: ["hourWindowModule"] }
   );
+
+export type FormType = z.infer<typeof FormSchema>;
+
 const CreateSchedule: FC = () => {
   // export function CreateSchedule() {
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormType>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       scheduleName: "",
@@ -108,16 +97,10 @@ const CreateSchedule: FC = () => {
     },
   });
 
-  const [hourWindows, setHourWindows] = useState<HourWindow[]>([
-    { start: { hours: 12, minutes: 0 }, end: { hours: 15, minutes: 0 } },
-  ]);
-  // const [test2, setTest2] = useState(500);
-  const [start, setStart] = useState(hourWindows[0].start);
-  const [end, setEnd] = useState(hourWindows[0].end);
-
+  // TODO: delete this when debugging is over.
   useEffect(() => {
-    console.log(hourWindows);
-  }, [hourWindows]);
+    console.log(form.formState);
+  }, [form]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
@@ -139,64 +122,13 @@ const CreateSchedule: FC = () => {
             <FormField
               control={form.control}
               name="scheduleName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Schedule Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Examples: Work, Study, Exercise..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={ScheduleNameField}
             />
 
             <FormField
-              control={form.control}
               name="week"
-              render={() => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel className="text-base">Weekdays</FormLabel>
-                  </div>
-                  {week.map((item) => (
-                    <FormField
-                      key={item.id}
-                      control={form.control}
-                      name="week"
-                      render={({ field }) => {
-                        return (
-                          <FormItem
-                            key={item.id}
-                            className="flex flex-row items-start space-x-3 space-y-0"
-                          >
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(item.id)}
-                                onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...field.value, item.id])
-                                    : field.onChange(
-                                        field.value?.filter(
-                                          (value) => value !== item.id
-                                        )
-                                      );
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {item.day}
-                            </FormLabel>
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  ))}
-                  <FormMessage />
-                </FormItem>
-              )}
+              control={form.control}
+              render={WeekdaysField}
             />
 
             <FormField

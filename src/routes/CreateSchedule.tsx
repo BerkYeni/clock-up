@@ -26,6 +26,7 @@ import { Separator } from "@radix-ui/react-separator";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import ScheduleNameField from "@/components/ScheduleNameField";
 import WeekdaysField from "@/components/WeekdaysField";
+import HourWindowsField from "@/components/HourWindowsField";
 // import { Slider } from "@radix-ui/react-slider";
 
 // TODO: look into toast
@@ -99,7 +100,7 @@ const CreateSchedule: FC = () => {
 
   // TODO: delete this when debugging is over.
   useEffect(() => {
-    console.log(form.formState);
+    console.log(form);
   }, [form]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -128,242 +129,13 @@ const CreateSchedule: FC = () => {
             <FormField
               name="week"
               control={form.control}
-              render={WeekdaysField}
+              render={(props) => <WeekdaysField {...props} form={form} />}
             />
 
             <FormField
               name="hourWindowModule"
               control={form.control}
-              render={() => {
-                return (
-                  <>
-                    <FormItem>
-                      <FormLabel>Time Frames</FormLabel>
-                      <FormField
-                        name="hourWindowModule"
-                        control={form.control}
-                        render={({ field }) => {
-                          // TODO: swap this with materialui time picker android ver
-                          return (
-                            <FormItem>
-                              <div className="flex">
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    step={1}
-                                    // min={0}
-                                    // max={23}
-                                    value={
-                                      field.value.hourWindowInput.start.hours
-                                    }
-                                    onChange={(event) =>
-                                      field.onChange({
-                                        ...field.value,
-                                        hourWindowInput: {
-                                          ...field.value.hourWindowInput,
-                                          start: {
-                                            ...field.value.hourWindowInput
-                                              .start,
-                                            hours: event.target.value,
-                                          },
-                                        },
-                                      })
-                                    }
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                                <FormControl>
-                                  <Input
-                                    className="mr-1"
-                                    type="number"
-                                    step={1}
-                                    min={0}
-                                    max={59}
-                                    value={
-                                      field.value.hourWindowInput.start.minutes
-                                    }
-                                    onChange={(event) =>
-                                      field.onChange({
-                                        ...field.value,
-                                        hourWindowInput: {
-                                          ...field.value.hourWindowInput,
-                                          start: {
-                                            ...field.value.hourWindowInput
-                                              .start,
-                                            minutes: event.target.value,
-                                          },
-                                        },
-                                      })
-                                    }
-                                  />
-                                </FormControl>
-                                <FormControl>
-                                  <Input
-                                    className="ml-1"
-                                    type="number"
-                                    step={1}
-                                    min={0}
-                                    max={23}
-                                    value={
-                                      field.value.hourWindowInput.end.hours
-                                    }
-                                    onChange={(event) =>
-                                      field.onChange({
-                                        ...field.value,
-                                        hourWindowInput: {
-                                          ...field.value.hourWindowInput,
-                                          end: {
-                                            ...field.value.hourWindowInput.end,
-                                            hours: event.target.value,
-                                          },
-                                        },
-                                      })
-                                    }
-                                  />
-                                </FormControl>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    step={1}
-                                    min={0}
-                                    max={59}
-                                    value={
-                                      field.value.hourWindowInput.end.minutes
-                                    }
-                                    onChange={(event) =>
-                                      field.onChange({
-                                        ...field.value,
-                                        hourWindowInput: {
-                                          ...field.value.hourWindowInput,
-                                          end: {
-                                            ...field.value.hourWindowInput.end,
-                                            minutes: event.target.value,
-                                          },
-                                        },
-                                      })
-                                    }
-                                  />
-                                </FormControl>
-                              </div>
-                              <div className="flex justify-end">
-                                <FormControl>
-                                  <Button
-                                    onClick={(event) => {
-                                      event.preventDefault();
-                                      const biggestId = field.value.hourWindows
-                                        .length
-                                        ? Math.max(
-                                            ...field.value.hourWindows.map(
-                                              (window) => window.id
-                                            )
-                                          )
-                                        : -1;
-                                      const newWindow = {
-                                        id: biggestId + 1,
-                                        hourWindowsValue: {
-                                          start: {
-                                            hours:
-                                              field.value.hourWindowInput.start
-                                                .hours,
-                                            minutes:
-                                              field.value.hourWindowInput.start
-                                                .minutes,
-                                          },
-                                          end: {
-                                            hours:
-                                              field.value.hourWindowInput.end
-                                                .hours,
-                                            minutes:
-                                              field.value.hourWindowInput.end
-                                                .minutes,
-                                          },
-                                        },
-                                      };
-                                      field.onChange({
-                                        ...field.value,
-                                        hourWindows: [
-                                          ...field.value.hourWindows,
-                                          newWindow,
-                                        ],
-                                      });
-                                    }}
-                                  >
-                                    Add Window
-                                  </Button>
-                                </FormControl>
-                                <FormMessage />
-                              </div>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    </FormItem>
-                    <FormItem>
-                      <FormField
-                        name="hourWindowModule"
-                        control={form.control}
-                        render={(field) => (
-                          <div className="mb-4">
-                            <FormItem>
-                              <FormLabel>Hour Windows</FormLabel>
-
-                              <ScrollArea className="overflow-y-auto w-full h-36 rounded-md border">
-                                <div className="p-4">
-                                  {field.field.value.hourWindows.map(
-                                    (hourWindow) => (
-                                      <div key={hourWindow.id}>
-                                        <FormField
-                                          name="hourWindowModule"
-                                          control={form.control}
-                                          render={({ field }) => (
-                                            <div className="border-2 border-zinc-950 rounded-md">
-                                              <div className="flex w-full justify-between items-center">
-                                                {
-                                                  `${toStringHourAndMinute(
-                                                    hourWindow.hourWindowsValue
-                                                      .start
-                                                  )} - ${toStringHourAndMinute(
-                                                    hourWindow.hourWindowsValue
-                                                      .end
-                                                  )}` // TODO: implement to string am pm
-                                                }
-
-                                                <Button
-                                                  onClick={(event) => {
-                                                    event.preventDefault();
-                                                    field.onChange({
-                                                      ...field.value,
-                                                      hourWindows:
-                                                        field.value.hourWindows.filter(
-                                                          (window) =>
-                                                            window.id !==
-                                                            hourWindow.id
-                                                        ),
-                                                    });
-                                                  }}
-                                                >
-                                                  Remove
-                                                </Button>
-                                              </div>
-                                            </div>
-                                          )}
-                                        />
-                                        <Separator className="my-2" />
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </ScrollArea>
-                              <FormMessage />
-                            </FormItem>
-                          </div>
-                        )}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  </>
-                );
-              }}
+              render={(props) => <HourWindowsField {...props} form={form} />}
             />
 
             <div className="flex justify-end">

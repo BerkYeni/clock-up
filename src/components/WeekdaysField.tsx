@@ -3,6 +3,7 @@ import {
   ControllerRenderProps,
   ControllerFieldState,
   UseFormStateReturn,
+  UseFormReturn,
 } from "react-hook-form";
 import {
   FormItem,
@@ -28,7 +29,7 @@ type Props = {
   fieldState: ControllerFieldState;
   formState: UseFormStateReturn<FormType>;
 } & {
-  form: F;
+  form: UseFormReturn<FormType, any, undefined>;
 };
 
 const WeekdaysField = (props: Props) => {
@@ -40,7 +41,7 @@ const WeekdaysField = (props: Props) => {
       {week.map((item) => (
         <FormField
           key={item.id}
-          control={form.control}
+          control={props.form.control}
           name="week"
           render={({ field }) => {
             return (

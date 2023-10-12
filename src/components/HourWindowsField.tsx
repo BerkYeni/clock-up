@@ -1,10 +1,11 @@
 import { FormItem, FormLabel, FormField, FormMessage } from "./ui/form";
-import { FormType } from "@/routes/CreateSchedule";
+import { FormType, hourWindowSchema } from "@/routes/CreateSchedule";
 import {
   ControllerRenderProps,
   ControllerFieldState,
   UseFormStateReturn,
   UseFormReturn,
+  useForm,
 } from "react-hook-form";
 import AddHourWindowField from "./AddHourWindowField";
 import RemoveHourWindowField from "./RemoveHourWindowField";
@@ -16,19 +17,22 @@ type Props = {
 } & {
   form: UseFormReturn<FormType, any, undefined>;
 };
+import AddHourWindow from "./AddHourWindow";
 
 const HourWindowsField = (props: Props) => {
   const { form } = props;
+
   return (
     <>
       <FormItem>
         <FormLabel>Time Frames</FormLabel>
-        <FormField
+        {/* <FormField
           name="hourWindowModule"
-          control={form.control}
+          control={addHourWindowSchema.control}
           // TODO: swap this with materialui time picker android or static ver
           render={(props) => <AddHourWindowField {...props} form={form} />}
-        />
+        /> */}
+        <AddHourWindow />
       </FormItem>
 
       <FormItem>

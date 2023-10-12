@@ -3,27 +3,12 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form, FormField } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 
-import { FC, useEffect, useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { FC, useEffect } from "react";
 
-import {
-  isValidHourWindows,
-  toHourAndMinute,
-  toStringHourAndMinute,
-} from "@/utilities";
-import { Separator } from "@radix-ui/react-separator";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { isValidHourWindows } from "@/utilities";
 import ScheduleNameField from "@/components/ScheduleNameField";
 import WeekdaysField from "@/components/WeekdaysField";
 import HourWindowsField from "@/components/HourWindowsField";

@@ -27,40 +27,77 @@ const AddHourWindow = (props: Props) => {
   });
 
   const fieldValues = addHourWindowForm.getValues();
-  const fields = [
+  const fields: {
+    name: "start" | "end";
+    values: {
+      key: number;
+      name: "start.hours" | "start.minutes" | "end.hours" | "end.minutes";
+    }[];
+  }[] = [
     {
       name: "start",
       values: [
-        { key: 0, value: fieldValues.start.hours },
-        { key: 1, value: fieldValues.start.minutes },
+        { key: 0, name: "start.hours" },
+        { key: 1, name: "start.minutes" },
       ],
     },
     {
       name: "end",
       values: [
-        { key: 2, value: fieldValues.end.hours },
-        { key: 3, value: fieldValues.end.minutes },
+        { key: 2, name: "end.hours" },
+        { key: 3, name: "end.minutes" },
       ],
     },
   ];
 
   return (
     <div>
+      {/* <FormField
+        name={"start"}
+        render={(props) => (
+          <FormItem>
+            <FormControl>
+              <Input
+                type="number"
+                step={1}
+                // min={0}
+                // max={23}
+                value={props.field.value.}
+                // TODO: impl
+                // onChange={(event) => }
+                onChange={(event) => {
+                  props.field.onChange({
+                    ...props.field.value,
+                    [field.name]: event.target.value,
+                  });
+                }}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      /> */}
+
       {fields.map((end) =>
         end.values.map((field) => (
           <FormField
-            name={end.name}
+            control={addHourWindowForm.control}
+            key={field.key}
+            name={field.name}
             render={(props) => (
-              <FormItem key={field.key}>
+              <FormItem>
                 <FormControl>
                   <Input
                     type="number"
                     step={1}
                     // min={0}
                     // max={23}
-                    value={field.value}
                     // TODO: impl
                     // onChange={(event) => }
+                    // value={field.value}
+                    // onChange={(event) => {
+                    //   props.field.onChange(event.target.value);
+                    // }}
+                    {...props.field}
                   />
                 </FormControl>
               </FormItem>
